@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> loadData() async {
     final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("items") != null) {
+    if (prefs.getString("items") != null && prefs.getString("items") != '[]') {
       print(prefs.getString("items"));
       var jsonList = jsonDecode(prefs.getString("items") ?? "");
 
@@ -87,19 +87,28 @@ class _MyHomePageState extends State<MyHomePage> {
         itemsList.add(item);
       });
     } else {
-      final String response =
-          await rootBundle.loadString('./json/itemsTest.json');
-      var data = await json.decode(response);
-      print("hello");
-      print(data);
-      data = data['items'];
-      var tempItemsList = await jsonDecode(jsonEncode(data));
-      tempItemsList.forEach((jsonItem) {
-        print(jsonItem);
-        Item item = Item.fromJson(jsonItem);
-        itemsList.add(item);
-        // print(item.name);
-      });
+      //load test data
+      // final String response =
+      //     await rootBundle.loadString('./json/itemsTest.json');
+      // var data = await json.decode(response);
+      // print("hello");
+      // print(data);
+      // data = data['items'];
+      // var tempItemsList = await jsonDecode(jsonEncode(data));
+      // tempItemsList.forEach((jsonItem) {
+      //   print(jsonItem);
+      //   Item item = Item.fromJson(jsonItem);
+      //   itemsList.add(item);
+      //   // print(item.name);
+      // });
+      Item item = Item(
+          id: 1,
+          changeValue: 0,
+          name: "No items here, add one!",
+          note: "This is an item!",
+          quantity: 0,
+          unit: "");
+      itemsList.add(item);
     }
 
     setState(() {});

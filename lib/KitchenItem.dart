@@ -20,7 +20,7 @@ class KitchenItem extends StatefulWidget {
 
 class _KitchenItemState extends State<KitchenItem> {
   DataSaver dataSaver = DataSaver();
-  Offset _tapDownPosition = Offset(1, 1);
+  Offset _tapDownPosition = const Offset(1, 1);
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -30,7 +30,7 @@ class _KitchenItemState extends State<KitchenItem> {
       onLongPress: () {
         final RenderObject? overlay =
             Overlay.of(context)?.context.findRenderObject();
-
+        //creating menu for the item
         showMenu(
           context: context,
           items: <PopupMenuEntry>[
@@ -47,8 +47,7 @@ class _KitchenItemState extends State<KitchenItem> {
                   widget.funCallback();
                 });
               },
-              value: 0,
-              child: Text("Delete"),
+              child: const Text("Delete Item"),
             ),
           ],
           position: RelativeRect.fromLTRB(

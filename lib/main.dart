@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -30,6 +31,12 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         primarySwatch: Colors.blue,
+        textTheme: const TextTheme(
+          headline1: TextStyle(
+              fontSize: 36.0, fontWeight: FontWeight.w500, color: Colors.white),
+          headline6: TextStyle(fontSize: 24.0, fontFamily: 'Roboto'),
+          // bodyText2: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
+        ),
       ),
       home: const MyHomePage(title: 'My Kitchen'),
     );
@@ -59,11 +66,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadData();
     });
+    super.initState();
+  }
+
+  FutureOr refreshPage(dynamic value) {
+    setState(() {});
   }
 
   Future<void> loadData() async {
@@ -108,7 +118,10 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: Text(widget.title),
+        titleTextStyle: Theme.of(context).textTheme.headline1,
       ),
       backgroundColor: Color(0xFF587291),
       body: Center(
@@ -130,6 +143,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     return KitchenItem(
                       item: itemsList[index],
                       itemsList: itemsList,
+                      funCallback: () {
+                        setState(() {});
+                      },
                     );
                   }),
             ),
@@ -140,8 +156,12 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: (() {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const AddItemPage()),
-          );
+            MaterialPageRoute(
+              builder: (context) => AddItemPage(
+                itemsList: itemsList,
+              ),
+            ),
+          ).then(refreshPage);
         }),
         tooltip: 'Increment',
         child: const Icon(Icons.add),

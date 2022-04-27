@@ -6,15 +6,21 @@ import 'package:kitchen_inventory/main.dart';
 
 import 'models/Item.dart';
 
-class AddItemPage extends StatefulWidget {
-  AddItemPage({Key? key, required this.itemsList}) : super(key: key);
+class DetailsPage extends StatefulWidget {
+  DetailsPage(
+      {Key? key,
+      required this.item,
+      required this.itemsList,
+      required this.funCallback})
+      : super(key: key);
+  Item item;
   List<Item> itemsList;
-
+  final Function() funCallback;
   @override
-  State<AddItemPage> createState() => _AddItemPageState();
+  State<DetailsPage> createState() => _DetailsPageState();
 }
 
-class _AddItemPageState extends State<AddItemPage> {
+class _DetailsPageState extends State<DetailsPage> {
   final nameController = TextEditingController();
   final noteController = TextEditingController();
   final quantityController = TextEditingController();
@@ -36,6 +42,17 @@ class _AddItemPageState extends State<AddItemPage> {
   }
 
   @override
+  void initState() {
+    nameController.text = widget.item.name;
+    noteController.text = widget.item.note;
+    quantityController.text = widget.item.quantity.toString();
+    unitController.text = widget.item.unit;
+    changeValueController.text = widget.item.changeValue.toString();
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -43,7 +60,7 @@ class _AddItemPageState extends State<AddItemPage> {
         // the App.build method, and use it to set our appbar title.
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('Add Item'),
+        title: Text(widget.item.name),
         titleTextStyle: Theme.of(context).textTheme.headline1,
       ),
       backgroundColor: Color(0xFF587291),
@@ -98,6 +115,7 @@ class _AddItemPageState extends State<AddItemPage> {
                     FilteringTextInputFormatter.allow(
                       RegExp(r'(^\d*\.?\d*[0-9]+\d*$)|(^[0-9]+\d*\.\d*$)'),
                     ),
+                    FilteringTextInputFormatter.digitsOnly
                   ],
                   decoration: InputDecoration(
                     labelText: 'Quantity',
@@ -124,7 +142,7 @@ class _AddItemPageState extends State<AddItemPage> {
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.allow(
                       RegExp(r'(^\d*\.?\d*[0-9]+\d*$)|(^[0-9]+\d*\.\d*$)'),
-                    ),
+                    )
                   ],
                   decoration: const InputDecoration(
                     labelText: 'Change Value',
@@ -178,31 +196,31 @@ class _AddItemPageState extends State<AddItemPage> {
                   onPressed: () {
                     if (nameController.text.isNotEmpty &&
                         quantityController.text.isNotEmpty) {
-                      print(widget.itemsList.length);
-                      Item newItem = Item(
-                          id: widget.itemsList.length,
-                          name: nameController.text,
-                          note: noteController.text.isNotEmpty
-                              ? noteController.text
-                              : "",
-                          quantity: double.parse(
-                              double.parse(quantityController.text)
-                                  .toStringAsFixed(2)),
-                          changeValue: changeValueController.text.isNotEmpty
+                      //getting index of item before changing vals
+                      int indexOfItem = widget.itemsList.indexOf(widget.item);
+                      widget.item.name = nameController.text;
+                      widget.item.quantity = double.parse(
+                          double.parse(quantityController.text)
+                              .toStringAsFixed(2));
+                      widget.item.unit = unitController.text.isNotEmpty
+                          ? unitController.text
+                          : "";
+                      widget.item.changeValue =
+                          changeValueController.text.isNotEmpty
                               ? double.parse(changeValueController.text)
-                              : 1.0,
-                          unit: unitController.text.isNotEmpty
-                              ? unitController.text
-                              : "");
-                      widget.itemsList.add(newItem);
+                              : 1.0;
+                      widget.item.note = noteController.text.isNotEmpty
+                          ? noteController.text
+                          : "";
+
+                      widget.itemsList.isNotEmpty
+                          ? widget.itemsList.removeAt(indexOfItem)
+                          : null;
+                      widget.itemsList.insert(indexOfItem, widget.item);
+                      //saving data
                       dataSaver.saveData(widget.itemsList);
+                      widget.funCallback();
                       Navigator.pop(context);
-                    } else if (nameController.text.isEmpty) {
-                      _validateName = true;
-                      setState(() {});
-                    } else if (quantityController.text.isEmpty) {
-                      _validateQuantity = true;
-                      setState(() {});
                     }
                   },
                   child: Text(

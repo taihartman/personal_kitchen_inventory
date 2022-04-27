@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:kitchen_inventory/DataSaver.dart';
+import 'package:kitchen_inventory/DetailsPage.dart';
 import 'package:kitchen_inventory/main.dart';
 import 'package:kitchen_inventory/models/Item.dart';
 
@@ -26,6 +27,18 @@ class _KitchenItemState extends State<KitchenItem> {
     return GestureDetector(
       onTapDown: (details) {
         _tapDownPosition = details.globalPosition;
+      },
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailsPage(
+              item: widget.item,
+              itemsList: widget.itemsList,
+              funCallback: widget.funCallback,
+            ),
+          ),
+        );
       },
       onLongPress: () {
         final RenderObject? overlay =
